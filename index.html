@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>???? ?????????</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        .menu-toggle {
+            position: fixed; 
+            top: 10px; 
+            left: 10px; 
+            cursor: pointer; 
+            z-index: 1000; 
+            background: #007BFF; 
+            padding: 10px; 
+            border-radius: 5px;
+        }
+        .menu-toggle div {
+            width: 30px; 
+            height: 3px; 
+            background: #fff; 
+            margin: 6px 0; 
+            transition: 0.3s;
+        }
+        .sidebar {
+            width: 250px;
+            background: #007BFF;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: -250px; 
+            height: 100%;
+            transition: 0.3s;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar.show {
+            left: 0;
+        }
+        .sidebar h2 {
+            margin: 0;
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #0056b3;
+        }
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .page { padding: 20px; }
+        .home-page { background: #f0f8ff; color: #333; }
+        .home-page h1 { margin: 0 0 20px 0; }
+        .home-page .section {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .home-page .section h2 {
+            margin-top: 0;
+        }
+        .referral-page { background: #fff; color: #333; }
+        .referral-page h1 { margin: 0 0 20px 0; }
+        .referral-page .referral-info {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .referral-page .referral-info p {
+            margin: 0 0 10px;
+            line-height: 1.5;
+        }
+        .withdrawal-page { background: #e8f5e9; color: #333; }
+        .withdrawal-page h1 { margin: 0 0 20px 0; }
+        .withdrawal-page .wallets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .withdrawal-page .wallet {
+            flex: 1;
+            max-width: 200px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            background: #fff;
+        }
+        .withdrawal-page .wallet img {
+            max-width: 100%;
+            height: auto;
+        }
+        .ads-page { background: #fff3cd; color: #333; }
+        .ads-page h1 { margin: 0 0 20px 0; }
+        .ads-page .ad {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+            transition: background 0.3s, cursor 0.3s;
+        }
+        .ads-page .ad:hover {
+            background: #f0f0f0;
+        }
+        .ads-page .ad.disabled {
+            background: #d3d3d3;
+            cursor: not-allowed;
+        }
+        .ads-page .ad.disabled:hover {
+            background: #d3d3d3;
+        }
+        .ads-page .ad button {
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .ads-page .ad button:hover {
+            background: #0056b3;
+        }
+        .back-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #28a745; /* ?????? */
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            display: none; /* ???? ???? ??????? */
+        }
+        .back-button:hover {
+            background: #218838;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .ad-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            max-width: 90%;
+            max-height: 80%;
+            overflow: auto;
+        }
+        .ad-popup .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .copy-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+        }
+        .copy-button:hover {
+            background: #0056b3;
+        }
+        .copy-message {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle -->
+    <div class="menu-toggle" id="menuToggle">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>?????? ???????</h2>
+        <ul>
+            <li><a href="#" onclick="showPage('home')">?????? ????????</a></li>
+            <li><a href="#" onclick="showPage('vipTasks')">???? VIP</a></li>
+            <li><a href="#" onclick="showPage('referrals')">????????</a></li>
+            <li><a href="#" onclick="showPage('ads')">?????? ?????????</a></li>
+            <li><a href="#" onclick="showPage('withdrawal')">??? ???????</a></li>
+        </ul>
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-button" id="backButton" onclick="goBack()">
+        ?? ??????
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div id="home" class="page home-page">
+            <h1>?????? ?? ?? ???? ??? ??????</h1>
+            <div class="section">
+                <h2>?????? ?????????</h2>
+                <p>???? ????????? ???? ??????.</p>
+                <button onclick="showPage('ads')">??? ????????</button>
+            </div>
+            <!-- Add other sections as needed -->
+        </div>
+
+        <div id="vipTasks" class="page vip-tasks-page" style="display: none;">
+            <h1>???? VIP</h1>
+            <p>??? ????? ????? ???? VIP ?????? ??? ?????? ??????.</p>
+            <!-- Add VIP tasks content here -->
+        </div>
+
+        <div id="referrals" class="page referral-page" style="display: none;">
+            <h1>????????</h1>
+            <div class="referral-info" style="border: 1px solid gray; padding: 10px;">
+                <p>?? ????? ??????? ???????? ??????:</p>
+                <p>??? ???? ??? 15?%? ?? ????? ?? ??? ??? ?????? ?? ???? ???? ?????</p>
+                <p>???? ???? ???? ??? 0.03$ ????? ??? ???? ??? ??? 1$</p>
+            </div>
+            <button class="copy-button" onclick="copyReferralLink()">???? ???? ???? ?????? ????? ??</button>
+            <div class="copy-message" id="copyMessage">?? ??? ???? ?????? ?????</div>
+        </div>
+
+        <div id="ads" class="page ads-page" style="display: none;">
+            <h1>?????? ?????????</h1>
+            <div class="ad" onclick="openAdPopup()">
+                <p>????? 1</p>
+                <button>???? ???????</button>
+            </div>
+            <div class="ad disabled">
+                <p>????? 2 (??? ????)</p>
+                <button>???? ???????</button>
+            </div>
+        </div>
+
+        <div id="withdrawal" class="page withdrawal-page" style="display: none;">
+            <h1>??? ???????</h1>
+            <div class="wallets">
+                <div class="wallet">
+                    <img src="binance-logo.png" alt="???????">
+                    <p>???????</p>
+                </div>
+                <div class="wallet">
+                    <img src="payer-logo.png" alt="?????">
+                    <p>?????</p>
+                </div>
+                <div class="wallet">
+                    <img src="perfectmoney-logo.png" alt="????? ????">
+                    <p>????? ????</p>
+                </div>
+                <div class="wallet">
+                    <img src="paypal-logo.png" alt="??? ???">
+                    <p>??? ???</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Popup -->
+    <div class="ad-popup" id="adPopup">
+        <button class="close" onclick="closeAdPopup()">×</button>
+        <h2>???????</h2>
+        <p>????? ??????? ???...</p>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const backButton = document.getElementById('backButton');
+        const pages = document.querySelectorAll('.page');
+        const copyMessage = document.getElementById('copyMessage');
+
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+            backButton.style.display = 'block'; // Show back button
+        }
+
+        function goBack() {
+            const previousPageId = document.querySelector('.page:not([style*="display: none"])').id;
+            if (previousPageId) {
+                document.getElementById(previousPageId).style.display = 'none';
+                backButton.style.display = 'none'; // Hide back button
+                showPage('home');
+            }
+        }
+
+        function openAdPopup() {
+            document.getElementById('adPopup').style.display = 'block';
+        }
+
+        function closeAdPopup() {
+            document.getElementById('adPopup').style.display = 'none';
+        }
+
+        function copyReferralLink() {
+            const referralLink = 'https://example.com/referral-link';
+            navigator.clipboard.writeText(referralLink).then(() => {
+                showCopyMessage('?? ??? ???? ?????? ?????');
+            }, (err) => {
+                console.error('??? ??? ??? ??? ??????:', err);
+            });
+        }
+
+        function showCopyMessage(message) {
+            copyMessage.textContent = message;
+            copyMessage.style.display = 'block';
+            setTimeout(() => {
+                copyMessage.style.display = 'none';
+            }, 1500); // Hide after 1.5 seconds
+        }
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    </script>
+</body>
+</html>
